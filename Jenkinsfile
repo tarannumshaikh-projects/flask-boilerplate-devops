@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = 'flast-boilerplate'   // Must match DockerHub repo
+        IMAGE_NAME = 'flast-boilerplate'       // Change this if your image name is different
         DOCKER_TAG = 'latest'
     }
 
@@ -32,6 +32,23 @@ pipeline {
                 }
             }
         }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                script {
+                    def dockerRepo = "docker.io/${env.DOCKER_USERNAME}/${env.IMAGE_NAME}"
+                    sh """
+                        # Replace image name in deployment YAML
+                        sed -i 's|IMAGE_PLACEHOLDER|${dockerRepo}:${DOCKER_TAG}|' k8s/deployment.yaml
+
+                        # Apply Kubernetes manifests
+                        kubectl apply -f k8s/deployment.yaml
+                        kubectl apply -f k8s/service.yaml
+                    """
+                }
+            }
+        }
     }
 }
 
+   
