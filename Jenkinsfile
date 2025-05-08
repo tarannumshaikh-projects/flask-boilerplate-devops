@@ -4,6 +4,7 @@ pipeline {
     environment {
         IMAGE_NAME = 'flast-boilerplate'       // Change this if your image name is different
         DOCKER_TAG = 'latest'
+	KUBECONFIG = "${HOME}/.kube/config" // Set path to kubeconfig
     }
 
     stages {
